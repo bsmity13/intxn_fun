@@ -111,4 +111,6 @@ This formulation saves you two parameters and might better capture the model you
 
 ## Interactions with quadratic terms
 
+**TBD**
+
 ---
