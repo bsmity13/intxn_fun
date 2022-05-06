@@ -114,3 +114,7 @@ This formulation saves you two parameters and might better capture the model you
 **TBD**
 
 ---
+
+Do you have feedback on this document? I'd love to hear it! Open an issue on the main GitHub repo here: https://github.com/bsmity13/intxn_fun/.
+
+---
