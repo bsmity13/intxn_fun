@@ -1,0 +1,54 @@
+---
+title: "Interactions as Functions"
+author: "Brian J. Smith"
+date: "May 6, 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+One way to think about interactions in a linear model is that they can be used to formulate a model parameter (the slope of a covariate) as a linear function of other variables in the model. 
+
+This is useful for interpreting interactions, and I personally am often motivated to employ this rationale in integrated step selection analysis (iSSA) when I am expressing the $\beta$s of the movement-free habitat selection kernel or the selection-free movement kernel as part of an interaction (example given in [Appendix B of Fieberg et al. 2021](https://conservancy.umn.edu/bitstream/handle/11299/218272/AppB_SSF_examples.html?sequence=26&isAllowed=y#Movement_and_Habitat_Interactions)).
+
+## Two-way interactions
+
+Let's begin with the simple case of a two-way interaction in an ordinary linear model. In `R`, such a model might be fit like this:
+
+```{r lm, eval=FALSE}
+lm(y ~ x1 * x2)
+```
+
+Note that the `*` in the model formula tells `R` to construct interaction terms with all of the lower order terms, as well, whereas the `:` in the model formula just creates the interaction term. The following is equivalent:
+
+```{r lm 2, eval=FALSE}
+lm(y ~ x1 + x2 + x1:x2)
+```
+
+The intercept is also implied in both formulas. So the math for the expected value of this linear model is (omitting observation-level subscripts):
+
+$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$$
+
+We can algebraically rearrange this to show how to express $\beta_1$ as a function of $x_2$.
+
+By the associative property:
+
+$$\mu = \beta_0 + (\beta_1 x_1 + \beta_3 x_1 x_2) + \beta_2 x_2$$
+
+Factor out $x_1$:
+
+$$\mu = \beta_0 + (\beta_1 + \beta_3 x_2)x_1  + \beta_2 x_2$$
+
+Define $\beta_1^*$ as a function of $x_2$ such that:
+
+$$\beta_1^* = f(x_2) = \beta_1 + \beta_3 x_2$$
+
+And by substitution:
+
+$$\mu = \beta_0 + \beta_1^* x_1  + \beta_2 x_2$$
+
+Hopefully it is clear that this looks just like the equation of a linear model without the two-way interaction, but in this case, $\beta_1^*$ is not a constant but a function (of $x_2$).
