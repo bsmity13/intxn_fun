@@ -2,7 +2,11 @@
 title: "Interactions as Functions"
 author: "Brian J. Smith"
 date: "May 6, 2022"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
 ---
 
 ```{r setup, include=FALSE}
@@ -51,4 +55,60 @@ And by substitution:
 
 $$\mu = \beta_0 + \beta_1^* x_1  + \beta_2 x_2$$
 
-Hopefully it is clear that this looks just like the equation of a linear model without the two-way interaction, but in this case, $\beta_1^*$ is not a constant but a function (of $x_2$).
+Hopefully it is clear that this looks just like the equation of a linear model without the two-way interaction, but in this case, $\beta_1^*$ is not a constant but a function (of $x_2$). In this way, we can use the value of $x_2$ to predict what the slope of $x_1$ should be.
+
+Hopefully it is also clear that $\beta_1^*$ takes the form of a straight line, with y-intercept = $\beta_1$ and slope = $\beta_3$. *I.e.*, the parameter for the main effect of $x_1$ is the intercept, and the parameter for the interaction is the slope. 
+
+Note that we could have equivalently rearranged this to express $\beta_2^*$ as a function of $x_1$.
+
+$$\mu = \beta_0 + \beta_1 x_1 + (\beta_2 x_2 + \beta_3 x_1 x_2)$$
+
+$$\mu = \beta_0 + \beta_1 x_1 + (\beta_2  + \beta_3 x_1 )x_2$$
+
+$$\mu = \beta_0 + \beta_1 x_1 + \beta_2^* x_2$$
+
+$$\beta_2^* = g(x_1) = \beta_2  + \beta_3 x_1$$
+
+**But also note** that we cannot do both simultaneously -- you must choose to rewrite the interaction as a function of either $x_1$ or $x_2$. (*Okay, technically you can split the effect, but that is not the point here.*) Which one you choose should depend on the type of inference you're trying to make.
+
+## Three-way interactions
+
+Now let's look at the similar case of a three-way interaction. Imagine we want to fit this model:
+
+```{r lm 3, eval=FALSE}
+lm(y ~ x1 * x2 * x3)
+
+# Equivalently
+
+lm(y ~ x1 + x2 + x3 + x1:x2 + x1:x3 + x2:x3 + x1:x2:x3)
+```
+
+The equation is:
+
+$$\mu = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_1 x_2 + \beta_5 x_1 x_3 + \beta_6 x_2 x_3 + \beta_7 x_1 x_2 x_3$$
+
+Imagine our interest is in formulating the slope of $x_1$ as a function of both $x_2$ and $x_3$. We'll group together all the terms with $x_1$, factor it out, and define the quantity multiplied by $x_1$ as $\beta_1^*$, just as before.
+
+$$\mu = \beta_0 + (\beta_1 x_1 + \beta_4 x_1 x_2 + \beta_5 x_1 x_3 + \beta_7 x_1 x_2 x_3) + \beta_2 x_2 + \beta_3 x_3 + \beta_6 x_2 x_3$$
+
+$$\mu = \beta_0 + (\beta_1 + \beta_4 x_2 + \beta_5 x_3 + \beta_7 x_2 x_3) x_1  + \beta_2 x_2 + \beta_3 x_3 + \beta_6 x_2 x_3$$
+
+$$\mu = \beta_0 + \beta_1^* x_1  + \beta_2 x_2 + \beta_3 x_3 + \beta_6 x_2 x_3$$
+
+$$\beta_1^* = h(x_1, x_2) = \beta_1 + \beta_4 x_2 + \beta_5 x_3 + \beta_7 x_2 x_3$$
+
+Note that we still have an interaction term in our main formula (for the interaction between $x_2$ and $x_3$) and that $\beta_1^*$ also has an interaction inside of it (between $x_2$ and $x_3$). This might not have been your intention, so this method can help guide whether or not you can omit some of the terms from your interaction. If you didn't want those additional interactions between $x_2$ and $x_3$, perhaps your model should've been formulated as:
+
+```{r lm 4, eval=FALSE}
+lm(y ~ x1 * x2 + x1 * x3)
+
+# Equivalently
+
+lm(y ~ x1 + x2 + x3 + x1:x2 + x1:x3)
+```
+
+This formulation saves you two parameters and might better capture the model you were trying to fit.
+
+## Interactions with quadratic terms
+
+---
